@@ -437,13 +437,37 @@
 </div>
 
 <div id="toast"></div>
+<datalist id="linkSays">
+  <option value="Click here to view the email"></option>
+  <option value="Click here to review the email"></option>
+  <option value="Click here to view email"></option>
+  <option value="Click here to view Chatter update"></option>
+  <option value="Click here to view the document"></option>
+  <option value="Click here to sign"></option>
+</datalist>
 
 <!-- BULK UPDATE PREVIEW -->
 <div id="previewModal" class="modal">
   <div class="modal-content" style="max-width:760px">
     <span class="close-btn" onclick="closePreview()">&times;</span>
     <div class="panel-head"><h3 id="previewTitle" style="margin:0;color:var(--pink);letter-spacing:2px;text-transform:uppercase;font-weight:600">Preview</h3></div>
-    <div class="sub" style="color:var(--muted);margin-top:6px">This is how it will look in her Google Chat.</div>
+    <div class="sub" style="color:var(--muted);margin-top:6px">Change anything below. The preview updates as you type.</div>
+    <div class="form" id="previewForm" style="margin-top:14px" oninput="schedulePreview()" onchange="schedulePreview()">
+      <div><label>Greeting</label><textarea name="greeting" rows="2" style="min-height:52px"></textarea></div>
+      <div><label>Note (optional)</label><textarea name="note" rows="3" style="min-height:60px" placeholder="e.g. I cleared some items from your inbox. There are just a few here that might need your attention.&#10;Also, would you like me to clear the Ramp emails from your inbox?"></textarea></div>
+      <div class="row">
+        <div><label>Show first</label><select name="order"><option value="action">Need action first</option><option value="fyi">FYI first</option></select></div>
+        <div></div>
+      </div>
+      <div class="row">
+        <div><label>Need action header</label><input name="actionHeader" maxlength="80" list="actionHeads"></div>
+        <div><label>FYI header</label><input name="fyiHeader" maxlength="80" list="fyiHeads"></div>
+      </div>
+      <div><label>Closing</label><textarea name="closing" rows="2" style="min-height:52px"></textarea></div>
+    </div>
+    <datalist id="actionHeads"><option value="Need action / response:"></option><option value="NEED ACTION:"></option><option value="Need action:"></option></datalist>
+    <datalist id="fyiHeads"><option value="FYI / need to know"></option><option value="FYI:"></option></datalist>
+    <div class="sub" style="color:var(--muted)">Preview: how it will look in her Google Chat</div>
     <div class="preview-box" id="previewBox"></div>
     <div class="actions">
       <button class="btn primary" id="previewSend" onclick="confirmSend()">Send to chat</button>
@@ -719,7 +743,7 @@ function highlightCard(h, sec) {
       '<label class="pick" title="Include in the bulk update"><input type="checkbox"' + (off ? '' : ' checked') +
       ' onchange="toggleInclude(\'' + h.Exec + '\',\'' + h.ID + '\',this.checked)"> Include</label></div>' +
     (h.Summary ? '<div class="item-sub">' + esc(h.Summary) + '</div>' : '') +
-    (link ? '<div class="item-meta"><a href="' + link + '" target="_blank" rel="noopener" style="color:var(--pink)">Click here to view ' + (LINK_LABEL[h.LinkType] || 'email') + ' ↗</a></div>' : '') +
+    (link ? '<div class="item-meta"><a href="' + link + '" target="_blank" rel="noopener" style="color:var(--pink)">' + esc(LINK_LABEL[h.LinkType] ? 'Click here to view the ' + LINK_LABEL[h.LinkType] : (h.LinkType || 'Click here to view the email')) + ' ↗</a></div>' : '') +
     '<div class="item-meta">' + meta + '</div>' +
     '<div class="actions">' +
       (sent
@@ -770,7 +794,7 @@ function buildExecBoard(x) {
 
     '<div class="panel"><div class="panel-head"><h3>✉️ Email Highlights</h3>' +
       '<button class="btn sm" onclick="openForm(\'hl\',\'' + x + '\')">+ Add</button></div>' +
-      '<div class="sub">Emails she shouldn\'t miss, even after they leave her calendar. Tick what goes in today's update, then click Send update at the top.</div>' +
+      '<div class="sub">Emails she shouldn\'t miss, even after they leave her calendar. Tick what goes in today\'s update, then click Send update at the top.</div>' +
       '<form class="form hidden" id="hl-' + x + '" onsubmit="saveHighlight(event,\'' + x + '\')">' +
         '<input type="hidden" name="id">' +
         '<div><label>Section</label><select name="section">' +
@@ -779,10 +803,7 @@ function buildExecBoard(x) {
         '<div><label>Title</label><input name="title" maxlength="300" placeholder="e.g. GPIN-4911 – Generator Fuel Reimbursement"></div>' +
         '<div><label>Summary</label><textarea name="summary" maxlength="5000" placeholder="What it\'s about and what she needs to do. Start a line with * to make a bullet."></textarea></div>' +
         '<div class="row"><div><label>Link</label><input type="url" name="link" placeholder="Paste the Gmail or Chatter link"></div>' +
-        '<div><label>Link says</label><select name="linkType">' +
-          '<option value="auto">Auto (by link)</option><option value="email">Click here to view email</option>' +
-          '<option value="chatter">Click here to view Chatter update</option><option value="document">Click here to view document</option>' +
-          '<option value="link">Click here to view link</option></select></div></div>' +
+        '<div><label>Link says</label><input name="linkType" list="linkSays" maxlength="100" placeholder="Leave blank = automatic"></div></div>' +
         '<div class="actions"><button class="btn primary" type="submit" value="send">Save & send</button>' +
         '<button class="btn" type="submit" value="save">Save only</button>' +
         '<button class="btn ghost" type="button" onclick="closeForm(\'hl\',\'' + x + '\')">Cancel</button></div>' +
@@ -877,30 +898,61 @@ function editReminder(id) {
 function editHighlight(id) {
   const h = BOARD.highlights.filter(function (i) { return i.ID === id; })[0]; if (!h) return;
   const f = formEl('hl', h.Exec), v = f.elements;
-  v.id.value = h.ID; v.section.value = h.Section; v.title.value = h.Title || ''; v.summary.value = h.Summary; v.link.value = h.EmailLink; v.linkType.value = h.LinkType || 'auto';
+  v.id.value = h.ID; v.section.value = h.Section; v.title.value = h.Title || ''; v.summary.value = h.Summary; v.link.value = h.EmailLink; v.linkType.value = LINK_LABEL[h.LinkType] ? 'Click here to view the ' + LINK_LABEL[h.LinkType] : (h.LinkType || '');
   f.querySelector('button[type=submit]').textContent = 'Update & send';
   f.classList.remove('hidden'); f.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function sendHighlight(id, followUp) { run('sendHighlight', { id: id, followUp: followUp }, followUp ? 'Follow-up sent' : 'Sent to chat').catch(function () {}); }
 function sendReminder(id) { run('sendReminder', { id: id }, 'Reminder sent to chat').catch(function () {}); }
-let PREVIEW = null;
+let PREVIEW = null, previewTimer = null;
+const PREV_KEY = 'gp_digest_layout_';
+
+function previewOpts() {
+  const f = document.getElementById('previewForm');
+  const v = function (n) { return f.querySelector('[name=' + n + ']').value; };
+  return { greeting: v('greeting'), note: v('note'), closing: v('closing'), actionHeader: v('actionHeader'), fyiHeader: v('fyiHeader'), order: v('order') };
+}
+
 function sendDigest(x) {
   const ids = selectedIds(x);
   toast('Building preview…');
   api('previewDigest', { exec: x, ids: ids }).then(function (r) {
     PREVIEW = { exec: x, ids: ids, text: r.text };
+    const f = document.getElementById('previewForm');
+    const set = function (n, val) { f.querySelector('[name=' + n + ']').value = val; };
+    set('greeting', r.defaults.greeting); set('closing', r.defaults.closing); set('note', '');
+    set('actionHeader', r.defaults.actionHeader); set('fyiHeader', r.defaults.fyiHeader); set('order', 'action');
+    // remember your last headers / order for each executive
+    try {
+      const saved = JSON.parse(localStorage.getItem(PREV_KEY + x) || 'null');
+      if (saved) { set('actionHeader', saved.actionHeader || r.defaults.actionHeader); set('fyiHeader', saved.fyiHeader || r.defaults.fyiHeader); set('order', saved.order || 'action'); }
+    } catch (e) {}
     document.getElementById('previewTitle').textContent = 'Update for ' + EXEC_NAME[x];
-    document.getElementById('previewBox').innerHTML = chatToHtml(r.text);
     document.getElementById('previewModal').style.display = 'block';
     document.getElementById('toast').className = '';
+    refreshPreview();
   }).catch(function (err) { toast(err.message || String(err), 'err'); });
 }
+
+function schedulePreview() { clearTimeout(previewTimer); previewTimer = setTimeout(refreshPreview, 450); }
+
+function refreshPreview() {
+  if (!PREVIEW) return;
+  const p = PREVIEW, opts = previewOpts();
+  api('previewDigest', { exec: p.exec, ids: p.ids, opts: opts }).then(function (r) {
+    if (PREVIEW !== p) return;
+    p.text = r.text;
+    document.getElementById('previewBox').innerHTML = chatToHtml(r.text);
+  }).catch(function (err) { document.getElementById('previewBox').textContent = err.message || String(err); });
+}
+
 function confirmSend() {
   if (!PREVIEW) return;
-  const p = PREVIEW, btn = document.getElementById('previewSend');
+  const p = PREVIEW, btn = document.getElementById('previewSend'), opts = previewOpts();
+  try { localStorage.setItem(PREV_KEY + p.exec, JSON.stringify({ actionHeader: opts.actionHeader, fyiHeader: opts.fyiHeader, order: opts.order })); } catch (e) {}
   btn.disabled = true;
-  run('sendDigest', { exec: p.exec, ids: p.ids }, 'Update sent to ' + EXEC_NAME[p.exec])
+  run('sendDigest', { exec: p.exec, ids: p.ids, opts: opts }, 'Update sent to ' + EXEC_NAME[p.exec])
     .then(function () { EXCLUDE[p.exec] = {}; renderExecLists(p.exec); closePreview(); })
     .catch(function () {})
     .then(function () { btn.disabled = false; });
