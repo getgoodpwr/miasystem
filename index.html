@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base target="_top">
+  <title>Goodpwr Solar Systems Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* --- PREMIUM OBSIDIAN NEUTRAL THEME --- */
+    :root {
+      --bg: #0d0d0f; --panel: rgba(22,22,26,0.78); --card: #141418; --line: rgba(141,110,99,0.22);
+      --text: #f5f5f7; --muted: #a0a0a5; --soft: #c0c0c5; --tan: #8D6E63; --pink: #FFB6C1; --red: #ff6b6b; --amber: #f2c46d;
+    }
+    * { box-sizing: border-box; }
+    body, html {
+      margin: 0; padding: 0; min-height: 100%; width: 100%;
+      font-family: 'Cormorant Garamond', serif; font-size: 17px;
+      background-color: var(--bg); color: var(--text); overflow-x: hidden; color-scheme: dark;
+    }
+    a { color: inherit; }
+
+    .viewport { min-height: 100vh; width: 100%; display: flex; justify-content: center; position: relative; background: var(--bg); padding: 40px 0 90px; }
+
+    .art-layer {
+      position: fixed; top: 0; left: 3%; width: 100%; height: 100%;
+      background-image: url('https://res.cloudinary.com/dhllzxhst/image/upload/v1783532151/fe184794539ffa66c74d942e78a5c26a_qlwz3h.jpg');
+      background-size: 28% auto; background-repeat: no-repeat; background-position: left center; z-index: 1;
+      -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 24%, rgba(0,0,0,0) 46%);
+      mask-image: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 24%, rgba(0,0,0,0) 46%);
+    }
+    .texture { position: fixed; inset: 0; background: rgba(141,110,99,0.02); pointer-events: none; z-index: 2; }
+
+    .ui-container { width: 52%; margin-left: 42%; z-index: 10; display: flex; flex-direction: column; animation: fadeIn 1.2s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+    .logo-sequence { margin-bottom: 12px; text-align: center; }
+    .main-logo { max-width: 130px; height: auto; opacity: 0.95; }
+    .title-sequence { margin-bottom: 26px; text-align: center; }
+    .title-sequence h1 { font-size: 2.6rem; letter-spacing: 12px; color: #e5e5e7; margin: 0; text-transform: uppercase; font-weight: 300; }
+    .accent-bar { width: 45px; height: 1px; background: var(--tan); margin: 12px auto 0; opacity: 0.5; }
+
+    /* --- TABS --- */
+    .tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 10px; }
+    .tab {
+      background: none; border: none; color: var(--muted); font-family: inherit; font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 1.8px; text-transform: uppercase; padding: 12px 11px; cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .25s, border-color .25s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--pink); border-bottom-color: var(--pink); }
+    .tab .count { display: inline-block; min-width: 18px; padding: 0 6px; margin-left: 6px; border-radius: 10px; font-size: 0.7rem; letter-spacing: 0; background: rgba(255,182,193,0.15); color: var(--pink); }
+    .tab .count.hot { background: var(--pink); color: #16161a; }
+    .today-line { color: var(--tan); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; margin: 6px 0 22px; text-align: right; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; animation: fadeIn .5s ease-out; }
+
+    /* --- PANELS --- */
+    .panel {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 22px 22px 18px;
+      margin-bottom: 18px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .panel.glow { border-color: rgba(255,182,193,0.45); box-shadow: 0 0 0 1px rgba(255,182,193,0.15), 0 10px 30px rgba(255,182,193,0.08); }
+    .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .panel h3 { margin: 0; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; font-size: 1.05rem; color: var(--pink); }
+    .panel .sub { color: var(--muted); font-size: 0.85rem; margin: 6px 0 4px; }
+    .progress { font-size: 0.72rem; letter-spacing: 2px; color: var(--tan); text-transform: uppercase; white-space: nowrap; }
+    .progress.complete { color: var(--pink); }
+    .link-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
+
+    /* --- CHECKLIST --- */
+    .chk { display: flex; align-items: center; gap: 12px; padding: 11px 4px; border-bottom: 1px dashed rgba(141,110,99,0.18); cursor: pointer; }
+    .chk:last-child { border-bottom: none; }
+    .chk input { accent-color: var(--pink); width: 17px; height: 17px; flex: none; cursor: pointer; }
+    .chk-text { flex: 1; color: var(--soft); font-size: 1rem; line-height: 1.35; }
+    .chk.on .chk-text { text-decoration: line-through; opacity: 0.45; }
+    .group-label { font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--tan); margin: 16px 0 2px; }
+
+    /* --- BUTTONS --- */
+    .btn, .mini {
+      font-family: inherit; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; cursor: pointer;
+      border: 1px solid rgba(255,182,193,0.35); background: transparent; color: var(--pink); border-radius: 4px;
+      text-decoration: none; white-space: nowrap; transition: all .25s; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .btn { font-size: 0.74rem; padding: 9px 15px; }
+    .mini { font-size: 0.62rem; padding: 4px 9px; }
+    .btn:hover, .mini:hover { background: rgba(255,182,193,0.1); border-color: var(--pink); }
+    .btn.primary { background: var(--pink); color: #16161a; border-color: var(--pink); }
+    .btn.primary:hover { box-shadow: 0 4px 15px rgba(255,182,193,0.25); background: #ffc7d0; }
+    .btn.ghost { border-color: var(--line); color: var(--soft); }
+    .btn.sm { font-size: 0.64rem; padding: 6px 10px; }
+    .btn.danger:hover { border-color: var(--red); color: var(--red); background: rgba(255,107,107,0.08); }
+    .btn:disabled { opacity: .5; cursor: wait; }
+    .chip { font-size: 0.68rem; padding: 7px 12px; }
+
+    /* --- FORMS --- */
+    .form { margin: 16px 0 6px; padding: 16px; border: 1px dashed rgba(255,182,193,0.25); border-radius: 6px; background: rgba(13,13,15,0.6); display: grid; gap: 10px; }
+    .form.hidden { display: none; }
+    .form label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--tan); display: block; margin-bottom: 4px; }
+    .form input, .form select, .form textarea, .calc input {
+      width: 100%; background: #111114; border: 1px solid rgba(141,110,99,0.3); color: var(--text);
+      padding: 10px 12px; border-radius: 4px; font-family: inherit; font-size: 1rem; outline: none;
+    }
+    .form textarea { min-height: 78px; resize: vertical; }
+    .form input:focus, .form select:focus, .form textarea:focus, .calc input:focus { border-color: var(--pink); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    /* --- ITEMS --- */
+    .item { border: 1px solid rgba(141,110,99,0.18); border-left: 3px solid var(--tan); background: var(--card); padding: 12px 14px; border-radius: 4px; margin-top: 10px; }
+    .item-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.85rem; color: var(--soft); margin-bottom: 4px; }
+    .item-title { font-size: 1.08rem; font-weight: 600; color: var(--text); }
+    .item-text { color: var(--text); font-size: 1.02rem; line-height: 1.4; white-space: pre-wrap; word-break: break-word; }
+    .item-sub { color: var(--soft); font-size: 0.92rem; margin-top: 3px; white-space: pre-wrap; word-break: break-word; }
+    .item-meta { color: var(--muted); font-size: 0.78rem; margin-top: 6px; }
+    .item .actions { margin-top: 10px; }
+    .item.due-tomorrow { border-left-color: var(--pink); background: rgba(255,182,193,0.06); box-shadow: 0 0 0 1px rgba(255,182,193,0.35), 0 0 22px rgba(255,182,193,0.12); }
+    .item.due-today { border-left-color: var(--red); background: rgba(255,107,107,0.06); box-shadow: 0 0 0 1px rgba(255,107,107,0.35); }
+    .item.past { opacity: 0.6; }
+    .item.stale { border-left-color: var(--amber); }
+    .item.sec-need-action { border-left-color: var(--red); }
+    .item.sec-need-response { border-left-color: var(--amber); }
+    .item.sec-fyi { border-left-color: #7fb2ff; }
+
+    .badge { font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 2px 9px; border-radius: 20px; border: 1px solid currentColor; }
+    .badge.today { color: var(--red); }
+    .badge.tomorrow { color: #16161a; background: var(--pink); border-color: var(--pink); }
+    .badge.later { color: var(--muted); }
+    .badge.past { color: var(--muted); }
+    .badge.warn { color: var(--amber); }
+    .badge.who { color: var(--tan); }
+
+    .sec-head { margin: 20px 0 0; font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; color: var(--soft); display: flex; align-items: center; gap: 8px; }
+    .empty { color: var(--muted); font-style: italic; font-size: 0.92rem; padding: 10px 2px 2px; }
+    .hook-warn { color: var(--amber); font-size: 0.85rem; margin-top: 10px; }
+
+    /* --- CALCULATOR --- */
+    .calc { margin-top: 14px; padding: 14px; border-radius: 4px; background: rgba(141,110,99,0.06); border-left: 3px solid var(--pink); }
+    .calc .calc-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--pink); font-weight: 600; display: block; margin-bottom: 8px; }
+    .calc .calc-row { display: grid; grid-template-columns: 1fr 1.3fr; gap: 10px; align-items: center; }
+    .calc-out { color: var(--soft); font-size: 0.98rem; }
+    .calc-out b { color: var(--pink); }
+
+    /* --- SECTION HEADERS + LINK GRID (Workstations) --- */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .section-header {
+      grid-column: span 2; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 3px; color: #fff;
+      margin: 22px 0 4px; padding: 40px 20px 14px; border-radius: 6px; font-weight: 600; position: relative; overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-shadow: 0 2px 4px rgba(0,0,0,0.8); background-size: cover; background-position: center; background-color: #1a1a1f;
+    }
+    .section-header:first-child { margin-top: 0; }
+    .section-header::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(13,13,15,0.95) 0%, rgba(13,13,15,0.3) 100%); z-index: 1; }
+    .section-header span { position: relative; z-index: 2; }
+    .sh-workstations { background-image: url('https://res.cloudinary.com/dhllzxhst/image/upload/v1783541176/035a8168ccd0374d79b63fbb621c6293_1_zl3ek5.jpg'); }
+    .sh-infrastructure { background-image: url('https://res.cloudinary.com/dhllzxhst/image/upload/v1783541175/4d67d490cc2add12eba12850b321fec5_lobzuz.jpg'); }
+    .sh-cover { background-image: url('https://res.cloudinary.com/dhllzxhst/image/upload/v1783541175/9fbd41bea8994061c7bcb69bc84d5b40_sadwwt.jpg'); }
+
+    .node {
+      background: rgba(22,22,26,0.75); border: 1px solid rgba(141,110,99,0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      padding: 20px; text-decoration: none; color: var(--text); border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .node:hover { background: rgba(141,110,99,0.12); border-color: var(--pink); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255,182,193,0.1); }
+    .node strong { color: var(--pink); font-size: 1.02rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; display: block; margin-bottom: 4px; }
+    .node span { color: var(--soft); font-size: 0.8rem; opacity: 0.85; display: block; }
+    .wide-node { grid-column: span 2; background: rgba(255,182,193,0.02); }
+
+    .footer-stamp { margin-top: 40px; color: var(--tan); font-size: 0.75rem; letter-spacing: 5px; opacity: 0.6; text-align: center; }
+
+    /* --- TOAST --- */
+    #toast {
+      position: fixed; left: 50%; bottom: 30px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; z-index: 20000;
+      background: #16161a; border: 1px solid var(--line); color: var(--text); padding: 12px 20px; border-radius: 6px;
+      font-size: 0.95rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: all .3s; max-width: 90vw;
+    }
+    #toast.show { opacity: 1; transform: translate(-50%, 0); }
+    #toast.ok { border-color: rgba(255,182,193,0.5); }
+    #toast.err { border-color: var(--red); color: #ffb3b3; }
+
+    /* --- SOP WIDGET --- */
+    #sopToggle {
+      position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px; background: rgba(22,22,26,0.85); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,0.4); z-index: 10000;
+      transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1); border: 1px solid rgba(255,182,193,0.3); backdrop-filter: blur(10px);
+    }
+    #sopToggle:hover { transform: translateY(-4px); border-color: var(--pink); box-shadow: 0 0 20px rgba(255,182,193,0.2); }
+    #sopToggle span { font-size: 20px; opacity: 0.85; }
+
+    .modal { display: none; position: fixed; z-index: 10001; inset: 0; background: rgba(13,13,15,0.96); backdrop-filter: blur(6px); }
+    .modal-content {
+      background: #16161a; margin: 3% auto; padding: 40px 45px; border: 1px solid rgba(141,110,99,0.25); border-radius: 8px;
+      width: 85%; max-width: 900px; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+    .modal-header-block { text-align: center; border-bottom: 1px solid rgba(141,110,99,0.2); padding-bottom: 22px; margin-bottom: 20px; }
+    .modal-header-logo { max-width: 100px; height: auto; margin-bottom: 12px; }
+    .modal-header-block h2 { font-size: 2.1rem; font-weight: 300; letter-spacing: 4px; color: #e5e5e7; margin: 0; text-transform: uppercase; }
+    .modal-meta-tag { font-size: 0.7rem; letter-spacing: 4px; color: var(--tan); text-transform: uppercase; margin-top: 6px; display: block; }
+    .download-btn {
+      margin-top: 15px; background: transparent; border: 1px solid var(--pink); color: var(--pink); font-family: inherit; font-size: 0.8rem;
+      text-transform: uppercase; letter-spacing: 2px; padding: 8px 20px; border-radius: 4px; cursor: pointer; transition: all 0.3s;
+    }
+    .download-btn:hover { background: var(--pink); color: #16161a; }
+    .sop-search { width: 100%; margin: 0 0 10px; background: #111114; border: 1px solid rgba(141,110,99,0.3); color: var(--text); padding: 11px 14px; border-radius: 4px; font-family: inherit; font-size: 1rem; outline: none; }
+    .sop-search:focus { border-color: var(--pink); }
+    .close-btn { float: right; font-size: 26px; color: #707075; cursor: pointer; transition: color 0.3s; font-weight: 200; }
+    .close-btn:hover { color: var(--pink); }
+
+    .acc-item { border-bottom: 1px solid rgba(141,110,99,0.15); }
+    .acc-group { font-size: 0.68rem; letter-spacing: 4px; text-transform: uppercase; color: var(--tan); margin: 26px 0 4px; }
+    .acc-header {
+      padding: 18px 10px; cursor: pointer; color: #e5e5e7; font-weight: 500; display: flex; justify-content: space-between;
+      text-transform: uppercase; letter-spacing: 2px; font-size: 0.95rem; transition: all 0.3s;
+    }
+    .acc-header:hover { color: var(--pink); padding-left: 15px; background: rgba(255,182,193,0.02); }
+    .acc-header span { font-weight: 300; font-family: monospace; color: var(--tan); }
+    .acc-body { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1); color: var(--soft); font-size: 0.98rem; line-height: 1.65; }
+
+    .sop-section { padding: 6px 12px 22px; }
+    .sop-grid-blocks { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+    .sop-card-dark { background: #1d1d22; padding: 16px 18px; border-radius: 4px; border: 1px solid rgba(141,110,99,0.2); border-left: 3px solid var(--tan); }
+    .sop-card-tan { background: rgba(141,110,99,0.05); padding: 16px 18px; border-radius: 4px; border-left: 3px solid var(--pink); }
+    .sop-section .mt { margin-top: 14px; }
+    .sop-label { color: var(--pink); font-weight: 600; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
+    .sop-alert { color: var(--red); font-weight: 600; border-left-color: var(--red) !important; }
+    .sop-section a { color: var(--pink); }
+    .sop-quote { font-style: italic; color: #d8d8dc; border-left: 2px solid var(--tan); padding-left: 12px; margin: 8px 0 0; }
+    .sop-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 12px; }
+    .sop-table th, .sop-table td { border: 1px solid rgba(141,110,99,0.25); padding: 7px 9px; text-align: left; vertical-align: top; }
+    .sop-table th { color: var(--tan); text-transform: uppercase; letter-spacing: 1px; font-size: 0.7rem; background: rgba(141,110,99,0.08); }
+    .table-wrap { overflow-x: auto; }
+
+    @media (max-width: 1100px) {
+      .art-layer { opacity: 0.15; background-size: cover; left: 0; }
+      .ui-container { width: 92%; margin-left: 0; }
+      .sop-grid-blocks { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .row, .calc .calc-row { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .section-header, .wide-node { grid-column: span 1; }
+      .title-sequence h1 { font-size: 1.9rem; letter-spacing: 8px; }
+      .modal-content { padding: 26px 20px; width: 94%; }
+      .tab { padding: 10px 9px; letter-spacing: 1.5px; font-size: .8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="viewport">
+  <div class="art-layer"></div>
+  <div class="texture"></div>
+
+  <div class="ui-container">
+    <div class="logo-sequence">
+      <img src="https://res.cloudinary.com/dhllzxhst/image/upload/v1783536958/Screenshot_2026-06-30_121847_ybxviv.jpg" alt="Goodpwr Solar Logo" class="main-logo">
+    </div>
+    <div class="title-sequence">
+      <h1>Goodpwr Solar</h1>
+      <div class="accent-bar"></div>
+    </div>
+
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-tab="command">Command Center</button>
+      <button class="tab" data-tab="Sherry">Miss Sherry <span class="count" id="count-Sherry"></span></button>
+      <button class="tab" data-tab="Jamie">Miss Jamie <span class="count" id="count-Jamie"></span></button>
+      <button class="tab" data-tab="links">Workstations</button>
+    </nav>
+    <div class="today-line" id="todayLine">Loading board…</div>
+
+    <!-- ================= COMMAND CENTER ================= -->
+    <section class="tab-panel active" id="tab-command">
+
+      <div id="cc-headsup"></div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>🌸 Daily Routine</h3>
+          <span class="progress" id="prog-routine"></span>
+        </div>
+        <div class="link-row">
+          <a class="btn chip" target="_blank" rel="noopener" href="https://mail.google.com/mail/u/0/d/AJBOG-MIU_rgqhEhtbf5nxuEiILNBtolnNm8AatUhU3sTvGsyNyb/#inbox">Sherry Email ↗</a>
+          <a class="btn chip" target="_blank" rel="noopener" href="https://mail.google.com/mail/u/0/d/AJBOG-O0DK9bKQDsJ7a59Bo7DNH8SmkGkukwPGn5DTvvPtnYffCe/#inbox">Jamie Email ↗</a>
+          <a class="btn chip" target="_blank" rel="noopener" href="https://script.google.com/a/macros/getgoodpwr.com/s/AKfycby1ArxRlbY--RJT-pVVyiYmVgqpmUw-jLSBl8XwauJpIoRFLjEbD-Dqn7knhYd_zb8lfA/exec">Meeting Reminder ↗</a>
+        </div>
+        <div id="list-routine"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>🛡 Compliance Check · Daily</h3>
+          <span class="progress" id="prog-compliance"></span>
+        </div>
+        <div class="link-row">
+          <a class="btn chip" target="_blank" rel="noopener" href="https://getgoodpwr.github.io/buildpartner-desk/">Build Partner Desk ↗</a>
+          <button class="btn chip ghost" type="button" onclick="openSop('BP Onboarding: Core Documents')">Onboarding SOP</button>
+          <button class="btn chip ghost" type="button" onclick="openSop('Licensing & Insurance Requirements')">COI Requirements</button>
+        </div>
+        <div id="list-compliance"></div>
+      </div>
+
+      <div class="panel" id="panel-weekly">
+        <div class="panel-head">
+          <h3>💰 Commission Check · Wednesday</h3>
+          <span class="progress" id="prog-weekly"></span>
+        </div>
+        <div class="sub" id="weekly-when"></div>
+        <div class="link-row">
+          <a class="btn chip" target="_blank" rel="noopener" href="https://docs.google.com/spreadsheets/d/1thVQGxJ0mYiei1MZO6e2g_IKYQ-uraORMhz73dkA010/edit?gid=556824372#gid=556824372">Commission Sheet ↗</a>
+          <a class="btn chip" target="_blank" rel="noopener" href="https://accounts.intuit.com/app/sign-in?app_group=QBO&asset_alias=Intuit.accounting.core.qbowebapp&app_environment=prod&iux_redirect_reason=UNAUTHENTICATED">QuickBooks ↗</a>
+          <a class="btn chip" target="_blank" rel="noopener" href="https://goodpwr-solar.my.site.com/partner/s/">CRM ↗</a>
+          <button class="btn chip ghost" type="button" onclick="openSop('Weekly Commission Check')">SOP</button>
+        </div>
+        <div id="list-weekly"></div>
+        <div class="calc">
+          <span class="calc-label">Permitting Rebate Calculator</span>
+          <div class="calc-row">
+            <input type="number" min="0" step="0.01" id="permitIn" placeholder="Permitting amount ($)" oninput="calcRebate()">
+            <div class="calc-out" id="permitOut">Rule: under $350 → match it. Over $350 → cap at $350.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>📌 Open Highlights</h3></div>
+        <div class="sub">What's still open on each executive's board.</div>
+        <div id="cc-open"></div>
+      </div>
+    </section>
+
+    <!-- ================= EXECUTIVE BOARDS (built by script) ================= -->
+    <section class="tab-panel" id="tab-Sherry"></section>
+    <section class="tab-panel" id="tab-Jamie"></section>
+
+    <!-- ================= WORKSTATIONS (LINKS) ================= -->
+    <section class="tab-panel" id="tab-links">
+      <div class="grid">
+        <a href="https://calendar.google.com/calendar/u/0/r?cid=Y19jMTY1ZTllYmUzOWQ3N2JkNDdlNDg4NGFjNmE1NWFkNjAzODBlNGI4MmRlODExMzRlNjBmY2M1NmI3OTE2ODhkQGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20" class="node wide-node" target="_blank" rel="noopener">
+          <strong>Calendar</strong><span>Temporal Sync Hub</span>
+        </a>
+
+        <div class="section-header sh-workstations"><span>Executive Workstations</span></div>
+
+        <a href="https://mail.google.com/mail/u/0/d/AJBOG-MIU_rgqhEhtbf5nxuEiILNBtolnNm8AatUhU3sTvGsyNyb/#inbox" class="node" target="_blank" rel="noopener">
+          <strong>Comms // Sherry</strong><span>Sherry Direct Inbox</span>
+        </a>
+        <a href="https://mail.google.com/mail/u/0/d/AJBOG-O0DK9bKQDsJ7a59Bo7DNH8SmkGkukwPGn5DTvvPtnYffCe/#inbox" class="node" target="_blank" rel="noopener">
+          <strong>Comms // Jamie</strong><span>Jamie Direct Inbox</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/1VRyEcpvEIXu8JshN9LHpFv-v2vEe673nuQzOs0P3lL8/edit?gid=0#gid=0" class="node" target="_blank" rel="noopener">
+          <strong>Sherry Logs</strong><span>Meeting Logs v3.0</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets/d/13DIazeBI6UNrne5SmYccCa88fUfxJB3zMImN3PF5qzY/edit?gid=0#gid=0" class="node" target="_blank" rel="noopener">
+          <strong>Jamie Logs</strong><span>Meeting Logs</span>
+        </a>
+        <a href="https://script.google.com/u/0/home/projects/1ZvDMNtswLXRdJq2l_gqzvXk_LL1c6uuZzbgWXmjEjfH-239ObccPcMdD/triggers" class="node" target="_blank" rel="noopener">
+          <strong>Sherry Triggers</strong><span>Automation Registry</span>
+        </a>
+        <a href="https://script.google.com/u/0/home/projects/1y5LLDuQW1yxAcx5hdTQWqzj4TWi2wELV-w1inRcmvzZkHYI18B8tsxLS/triggers" class="node" target="_blank" rel="noopener">
+          <strong>Jamie Triggers</strong><span>Automation Registry</span>
+        </a>
+        <a href="https://script.google.com/a/macros/getgoodpwr.com/s/AKfycby1ArxRlbY--RJT-pVVyiYmVgqpmUw-jLSBl8XwauJpIoRFLjEbD-Dqn7knhYd_zb8lfA/exec" class="node" target="_blank" rel="noopener">
+          <strong>Sherry Trigger</strong><span>Confirm Protocol Node</span>
+        </a>
+        <a href="https://script.google.com/macros/s/AKfycbwmlVC8UWfHmKtLvagK4D76O13lInmR5ZNbNDWvBwtpjTO3672h39X16rnjF9OmpQPs/exec" class="node" target="_blank" rel="noopener">
+          <strong>Jamie Trigger</strong><span>Confirm Protocol Node</span>
+        </a>
+
+        <div class="section-header sh-cover"><span>Compliance & Internal Tools</span></div>
+
+        <a href="https://getgoodpwr.github.io/buildpartner-desk/" class="node wide-node" target="_blank" rel="noopener">
+          <strong>Build Partner Desk</strong><span>Onboarding // IL Shines // Document Follow-up</span>
+        </a>
+        <a href="https://getgoodpwr.github.io/Compliance-Portal/" class="node" target="_blank" rel="noopener">
+          <strong>Compliance Portal</strong><span>IL Shines Designee Portal</span>
+        </a>
+        <a href="https://getgoodpwr.github.io/esignature/" class="node" target="_blank" rel="noopener">
+          <strong>E-Signature</strong><span>Goodpwr E-Sign Portal</span>
+        </a>
+        <a href="https://getgoodpwr.github.io/DocEditor/" class="node" target="_blank" rel="noopener">
+          <strong>HR Hub</strong><span>Document Editor & File Tools</span>
+        </a>
+        <a href="https://drive.google.com/drive/folders/1zhe-4J38oxbVd7oKvTozTsANVzz0frC5" class="node" target="_blank" rel="noopener">
+          <strong>SOP Link</strong><span>Operational Guidelines Vault</span>
+        </a>
+        <a href="https://apps.docusign.com/send/home" class="node" target="_blank" rel="noopener">
+          <strong>DocuSign</strong><span>Secure Execution Node</span>
+        </a>
+        <a href="#" id="dbLink" class="node" target="_blank" rel="noopener">
+          <strong>Board Database</strong><span>Highlights & Reminders Sheet</span>
+        </a>
+
+        <div class="section-header sh-infrastructure"><span>Finance & Global Infrastructure</span></div>
+
+        <a href="https://docs.google.com/spreadsheets/d/1thVQGxJ0mYiei1MZO6e2g_IKYQ-uraORMhz73dkA010/edit?gid=556824372#gid=556824372" class="node" target="_blank" rel="noopener">
+          <strong>Commission Sheet</strong><span>Contract Review // Adders</span>
+        </a>
+        <a href="https://accounts.intuit.com/app/sign-in?app_group=QBO&asset_alias=Intuit.accounting.core.qbowebapp&app_environment=prod&iux_redirect_reason=UNAUTHENTICATED" class="node" target="_blank" rel="noopener">
+          <strong>QuickBooks</strong><span>Accounting Ledger</span>
+        </a>
+        <a href="https://my.joinatmos.com/loans/installer" class="node" target="_blank" rel="noopener">
+          <strong>Atmos Financial</strong><span>Installer Loan Portal</span>
+        </a>
+        <a href="https://goodpwr-solar.my.site.com/partner/s/" class="node" target="_blank" rel="noopener">
+          <strong>Salesforce</strong><span>Partner Portal // CRM</span>
+        </a>
+        <a href="https://enerflo.io/company/home" class="node" target="_blank" rel="noopener">
+          <strong>Enerflo</strong><span>Corporate Uplink</span>
+        </a>
+        <a href="https://roofix.io/" class="node" target="_blank" rel="noopener">
+          <strong>Roofix</strong><span>External Assets</span>
+        </a>
+        <a href="https://sites.google.com/getgoodpwr.com/complaintresolutioncenter/home" class="node wide-node" target="_blank" rel="noopener">
+          <strong>Conflict Resolution</strong><span>Complaint Resolution Center // Support</span>
+        </a>
+      </div>
+    </section>
+
+    <div class="footer-stamp">Goodpwr Solar Terminal // 2026</div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- SOP WIDGET -->
+<div id="sopToggle" onclick="toggleModal()" title="Operational Guidelines"><span>💬</span></div>
+<div id="sopModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="toggleModal()">&times;</span>
+    <div class="modal-header-block">
+      <img src="https://res.cloudinary.com/dhllzxhst/image/upload/v1783536958/Screenshot_2026-06-30_121847_ybxviv.jpg" alt="Logo" class="modal-header-logo">
+      <h2>Operational Guidelines</h2>
+      <span class="modal-meta-tag">Goodpwr Solar Standard Operating Procedures</span>
+      <button class="download-btn" onclick="triggerManualDownload()">Download PDF Manual</button>
+    </div>
+    <input class="sop-search" id="sopSearch" type="search" placeholder="Search SOPs… (e.g. W-9, Nevada, LightReach, rebate)" oninput="filterSops(this.value)">
+    <div id="sopAccordion"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   CONNECTION
+   Served from Apps Script: nothing to change.
+   Only if you host this page on GitHub: paste the deployed /exec link below.
+   ========================================================= */
+const SCRIPT_URL = '';
+
+const EXECS = ['Sherry', 'Jamie'];
+const EXEC_NAME = { Sherry: 'Miss Sherry', Jamie: 'Miss Jamie' };
+const INBOX = {
+  Sherry: 'https://mail.google.com/mail/u/0/d/AJBOG-MIU_rgqhEhtbf5nxuEiILNBtolnNm8AatUhU3sTvGsyNyb/#inbox',
+  Jamie:  'https://mail.google.com/mail/u/0/d/AJBOG-O0DK9bKQDsJ7a59Bo7DNH8SmkGkukwPGn5DTvvPtnYffCe/#inbox'
+};
+const SECTIONS = [
+  { key: 'Need Action',   icon: '🔴', cls: 'sec-need-action' },
+  { key: 'Need Response', icon: '🟡', cls: 'sec-need-response' },
+  { key: 'FYI',           icon: '🔵', cls: 'sec-fyi' }
+];
+
+const CHECKS = {
+  routine: [
+    { id: 'r_sherry', text: "Clear Miss Sherry's inbox & calendar, then log her highlights", tab: 'Sherry' },
+    { id: 'r_jamie',  text: "Clear Miss Jamie's inbox & calendar, then log her highlights",  tab: 'Jamie' },
+    { id: 'r_meeting', text: 'Run the meeting reminders' },
+    { id: 'r_digest', text: 'Send the highlights digest to both', digest: true }
+  ],
+  compliance: [
+    { id: 'c_review', text: 'Check new Build Partner documents against the onboarding SOP', sop: 'BP Onboarding: Core Documents' },
+    { id: 'c_verify', text: 'Verify licenses on the state board site, not from the PDF alone', sop: 'BP Onboarding: State Licenses' },
+    { id: 'c_coi',    text: 'Check COIs: limits, certificate holder, additional insured, waiver', sop: 'Licensing & Insurance Requirements' },
+    { id: 'c_follow', text: 'Follow up missing documents', sop: 'Daily Compliance Check' }
+  ],
+  weekly: [
+    { id: 'w_contract',  text: 'Contract Review: spreadsheet amount matches the CRM', group: 'Contract Review' },
+    { id: 'w_permit',    text: 'Permitting matches QuickBooks', group: 'Adders vs QuickBooks' },
+    { id: 'w_tpi',       text: 'TPI matches QuickBooks', group: 'Adders vs QuickBooks' },
+    { id: 'w_icx',       text: 'ICX matches QuickBooks', group: 'Adders vs QuickBooks' },
+    { id: 'w_battery',   text: 'Battery matches QuickBooks', group: 'Adders vs QuickBooks' },
+    { id: 'w_materials', text: 'Materials match QuickBooks', group: 'Adders vs QuickBooks' },
+    { id: 'w_ja',        text: 'JA Report: no red negatives left; Permitting Rebate fixed', group: 'JA Report (CRM)' }
+  ]
+};
+
+let BOARD = null;
+
+/* =========================================================
+   API
+   ========================================================= */
+function api(action, payload) {
+  return new Promise(function (resolve, reject) {
+    const done = function (r) { r && r.ok ? resolve(r.data) : reject(new Error(r ? r.error : 'No response from the server.')); };
+    if (window.google && google.script && google.script.run) {
+      google.script.run.withSuccessHandler(done).withFailureHandler(reject).api(action, payload || {});
+    } else if (SCRIPT_URL) {
+      fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: action, payload: payload || {} }) })
+        .then(function (r) { return r.json(); }).then(done).catch(reject);
+    } else {
+      reject(new Error('Not connected. Open the board from its Apps Script web app link.'));
+    }
+  });
+}
+
+function run(action, payload, okMsg) {
+  toast('Working…');
+  return api(action, payload).then(function (b) {
+    if (b && b.today) { BOARD = b; renderAll(); }
+    if (okMsg) toast(okMsg, 'ok');
+    return b;
+  }).catch(function (err) {
+    toast(err.message || String(err), 'err');
+    throw err;
+  });
+}
+
+function load() {
+  api('getBoard').then(function (b) { BOARD = b; renderAll(); })
+    .catch(function (err) {
+      document.getElementById('todayLine').textContent = 'Could not load the board';
+      toast(err.message || String(err), 'err');
+    });
+}
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function safeUrl(u) { return /^https?:\/\//i.test(u || '') ? esc(u) : ''; }
+function utc(d) { const p = d.split('-').map(Number); return Date.UTC(p[0], p[1] - 1, p[2], 12); }
+function diffDays(d) { return Math.round((utc(d) - utc(BOARD.today)) / 86400000); }
+function fmtDate(d) { return new Date(utc(d)).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }); }
+function time12(t) { if (!t) return ''; const p = t.split(':').map(Number); return (p[0] % 12 || 12) + ':' + String(p[1]).padStart(2, '0') + ' ' + (p[0] < 12 ? 'AM' : 'PM'); }
+function fmtStamp(s) { if (!s) return ''; return fmtDate(s.slice(0, 10)).replace(/^\w+, /, '') + ', ' + time12(s.slice(11, 16)); }
+function relWhen(d) {
+  const n = diffDays(d);
+  if (n === 0) return { label: 'Today', cls: 'today', item: 'due-today' };
+  if (n === 1) return { label: 'Tomorrow', cls: 'tomorrow', item: 'due-tomorrow' };
+  if (n > 1) return { label: 'In ' + n + ' days', cls: 'later', item: '' };
+  return { label: Math.abs(n) + (n === -1 ? ' day ago' : ' days ago'), cls: 'past', item: 'past' };
+}
+function byWhen(a, b) { return (a.Date + (a.Time || '99')).localeCompare(b.Date + (b.Time || '99')); }
+
+let toastTimer;
+function toast(msg, kind) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + (kind || '');
+  clearTimeout(toastTimer);
+  if (kind) toastTimer = setTimeout(function () { t.className = ''; }, kind === 'err' ? 6000 : 2600);
+}
+
+/* =========================================================
+   TABS
+   ========================================================= */
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === name); });
+  document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.toggle('active', p.id === 'tab-' + name); });
+  try { sessionStorage.setItem('gp_tab', name); } catch (e) {}
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+document.getElementById('tabs').addEventListener('click', function (e) {
+  const b = e.target.closest('.tab'); if (b) showTab(b.dataset.tab);
+});
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+function renderAll() {
+  document.getElementById('todayLine').textContent = BOARD.todayLabel + ' · ' + BOARD.timezone.replace('America/', '').replace('_', ' ') + ' time';
+  if (BOARD.dbUrl) document.getElementById('dbLink').href = BOARD.dbUrl;
+  renderCommand();
+  EXECS.forEach(renderExecLists);
+}
+
+function checkRow(item, scope) {
+  const on = !!(BOARD.checks[scope] || {})[item.id];
+  let extra = '';
+  if (item.tab) extra += '<button type="button" class="mini" onclick="showTab(\'' + item.tab + '\')">Board</button>';
+  if (item.sop) extra += '<button type="button" class="mini" onclick="openSop(\'' + esc(item.sop) + '\')">SOP</button>';
+  if (item.digest) extra += EXECS.map(function (x) { return '<button type="button" class="mini" onclick="sendDigest(\'' + x + '\')">Send ' + x + '</button>'; }).join('');
+  return '<label class="chk' + (on ? ' on' : '') + '"><input type="checkbox"' + (on ? ' checked' : '') +
+    ' onchange="toggleCheck(\'' + scope + '\',\'' + item.id + '\',this)"><span class="chk-text">' + esc(item.text) + '</span>' + extra + '</label>';
+}
+
+function progress(el, list, scope) {
+  const done = list.filter(function (i) { return (BOARD.checks[scope] || {})[i.id]; }).length;
+  el.textContent = done === list.length ? '✓ All done' : done + ' / ' + list.length;
+  el.classList.toggle('complete', done === list.length);
+}
+
+function renderCommand() {
+  // Checklists
+  document.getElementById('list-routine').innerHTML = CHECKS.routine.map(function (i) { return checkRow(i, 'daily'); }).join('');
+  document.getElementById('list-compliance').innerHTML = CHECKS.compliance.map(function (i) { return checkRow(i, 'daily'); }).join('');
+  let lastGroup = '', wk = '';
+  CHECKS.weekly.forEach(function (i) {
+    if (i.group !== lastGroup) { wk += '<div class="group-label">' + esc(i.group) + '</div>'; lastGroup = i.group; }
+    wk += checkRow(i, 'weekly');
+  });
+  document.getElementById('list-weekly').innerHTML = wk;
+  progress(document.getElementById('prog-routine'), CHECKS.routine, 'daily');
+  progress(document.getElementById('prog-compliance'), CHECKS.compliance, 'daily');
+  progress(document.getElementById('prog-weekly'), CHECKS.weekly, 'weekly');
+
+  // Wednesday status
+  const wDone = CHECKS.weekly.every(function (i) { return (BOARD.checks.weekly || {})[i.id]; });
+  let when;
+  if (BOARD.dow === 3) when = '<span class="badge today">Due today</span> &nbsp;Today is Wednesday.';
+  else if (BOARD.dow < 3) when = '<span class="badge later">Coming up</span> &nbsp;Due ' + fmtDate(BOARD.weekWed) + '.';
+  else when = wDone
+    ? '<span class="badge later">Done this week</span> &nbsp;Next check ' + fmtDate(BOARD.nextWed) + '.'
+    : '<span class="badge warn">Not finished</span> &nbsp;This week\'s check was ' + fmtDate(BOARD.weekWed) + '. Next: ' + fmtDate(BOARD.nextWed) + '.';
+  document.getElementById('weekly-when').innerHTML = when;
+  document.getElementById('panel-weekly').classList.toggle('glow', BOARD.dow === 3 && !wDone);
+
+  // Heads-up (today + tomorrow, both executives)
+  const soon = BOARD.reminders.filter(function (r) { const n = diffDays(r.Date); return n === 0 || n === 1; }).sort(byWhen);
+  const hu = document.getElementById('cc-headsup');
+  hu.innerHTML = soon.length ? '<div class="panel glow"><div class="panel-head"><h3>⏰ Heads-up</h3><span class="progress">' + soon.length + ' coming up</span></div>' +
+    soon.map(function (r) { return reminderCard(r, true); }).join('') + '</div>' : '';
+
+  // Open highlights summary
+  document.getElementById('cc-open').innerHTML = EXECS.map(function (x) {
+    const open = BOARD.highlights.filter(function (h) { return h.Exec === x; });
+    const stale = open.filter(isStale).length;
+    const counts = SECTIONS.map(function (s) {
+      const n = open.filter(function (h) { return h.Section === s.key; }).length;
+      return n ? s.icon + ' ' + n + ' ' + s.key : '';
+    }).filter(Boolean).join(' &nbsp;·&nbsp; ');
+    return '<div class="item' + (stale ? ' stale' : '') + '"><div class="item-top"><span class="item-title">' + EXEC_NAME[x] + '</span>' +
+      (stale ? '<span class="badge warn">' + stale + ' sent earlier · still open</span>' : '') + '</div>' +
+      '<div class="item-sub">' + (counts || 'All clear.') + '</div>' +
+      '<div class="actions"><button class="btn sm" onclick="showTab(\'' + x + '\')">Open board</button>' +
+      (open.length ? '<button class="btn sm ghost" onclick="sendDigest(\'' + x + '\')">Send digest</button>' : '') + '</div></div>';
+  }).join('');
+
+  // Tab counters
+  EXECS.forEach(function (x) {
+    const n = BOARD.highlights.filter(function (h) { return h.Exec === x; }).length;
+    const hot = BOARD.reminders.some(function (r) { return r.Exec === x && (diffDays(r.Date) === 0 || diffDays(r.Date) === 1); });
+    const el = document.getElementById('count-' + x);
+    el.textContent = hot ? (n ? n + ' · ⏰' : '⏰') : (n || '');
+    el.className = 'count' + (hot ? ' hot' : '');
+    el.style.display = (n || hot) ? '' : 'none';
+  });
+}
+
+function isStale(h) { return h.LastSent && h.LastSent.slice(0, 10) < BOARD.today; }
+
+function reminderCard(r, showWho) {
+  const w = relWhen(r.Date);
+  const link = safeUrl(r.Link);
+  return '<div class="item ' + w.item + '">' +
+    '<div class="item-top"><span class="badge ' + w.cls + '">' + w.label + '</span>' +
+    (showWho ? '<span class="badge who">' + EXEC_NAME[r.Exec] + '</span>' : '') +
+    '<span>' + fmtDate(r.Date) + (r.Time ? ' · ' + time12(r.Time) : '') + '</span></div>' +
+    '<div class="item-title">' + esc(r.Title) + '</div>' +
+    (r.Details ? '<div class="item-sub">' + esc(r.Details) + '</div>' : '') +
+    (r.LastSent ? '<div class="item-meta">Sent to chat ' + fmtStamp(r.LastSent) + '</div>' : '') +
+    '<div class="actions">' +
+      (link ? '<a class="btn sm ghost" href="' + link + '" target="_blank" rel="noopener">Open ↗</a>' : '') +
+      '<button class="btn sm primary" onclick="sendReminder(\'' + r.ID + '\')">Send to chat</button>' +
+      (showWho ? '' : '<button class="btn sm ghost" onclick="editReminder(\'' + r.ID + '\')">Edit</button>') +
+      '<button class="btn sm ghost" onclick="markDone(\'Reminders\',\'' + r.ID + '\')">✓ Done</button>' +
+      (showWho ? '' : '<button class="btn sm ghost danger" onclick="deleteItem(\'Reminders\',\'' + r.ID + '\')">Delete</button>') +
+    '</div></div>';
+}
+
+function highlightCard(h, sec) {
+  const link = safeUrl(h.EmailLink);
+  const sent = parseInt(h.SendCount, 10) || 0;
+  const stale = isStale(h);
+  const notSent = !sent && h.Created.slice(0, 10) < BOARD.today;
+  let meta = 'Added ' + fmtStamp(h.Created);
+  if (sent) meta += ' · Sent ' + sent + '× (last ' + fmtStamp(h.LastSent) + ')';
+  return '<div class="item ' + sec.cls + (stale ? ' stale' : '') + '">' +
+    ((stale || notSent) ? '<div class="item-top">' +
+      (stale ? '<span class="badge warn">Sent earlier · still open · follow up?</span>' : '') +
+      (notSent ? '<span class="badge warn">Not sent yet</span>' : '') + '</div>' : '') +
+    '<div class="item-text">' + esc(h.Summary) + '</div>' +
+    '<div class="item-meta">' + meta + '</div>' +
+    '<div class="actions">' +
+      (link ? '<a class="btn sm ghost" href="' + link + '" target="_blank" rel="noopener">Open email ↗</a>' : '') +
+      (sent
+        ? '<button class="btn sm primary" onclick="sendHighlight(\'' + h.ID + '\',true)">🔁 Follow up</button>'
+        : '<button class="btn sm primary" onclick="sendHighlight(\'' + h.ID + '\',false)">Send</button>') +
+      '<button class="btn sm ghost" onclick="editHighlight(\'' + h.ID + '\')">Edit</button>' +
+      '<button class="btn sm ghost" onclick="markDone(\'Highlights\',\'' + h.ID + '\')">✓ Done</button>' +
+      '<button class="btn sm ghost danger" onclick="deleteItem(\'Highlights\',\'' + h.ID + '\')">Delete</button>' +
+    '</div></div>';
+}
+
+/* Executive board skeleton (built once, so typing in a form is never wiped) */
+function buildExecBoard(x) {
+  const el = document.getElementById('tab-' + x);
+  el.innerHTML =
+    '<div class="panel"><div class="panel-head"><h3>' + EXEC_NAME[x] + '</h3>' +
+      '<div class="actions"><a class="btn sm ghost" href="' + INBOX[x] + '" target="_blank" rel="noopener">Inbox ↗</a>' +
+      '<button class="btn sm primary" onclick="sendDigest(\'' + x + '\')">Send digest to chat</button></div></div>' +
+      '<div class="sub">The digest sends every open highlight, grouped by section, plus anything due today or tomorrow.</div>' +
+      '<div class="hook-warn" id="hook-' + x + '"></div></div>' +
+
+    '<div class="panel"><div class="panel-head"><h3>📅 Schedule & Reminders</h3>' +
+      '<button class="btn sm" onclick="openForm(\'rem\',\'' + x + '\')">+ Add</button></div>' +
+      '<div class="sub">Trips, appointments, anything with a date and time. It lights up the day before and on the day.</div>' +
+      '<form class="form hidden" id="rem-' + x + '" onsubmit="saveReminder(event,\'' + x + '\')">' +
+        '<input type="hidden" name="id">' +
+        '<div><label>What</label><input name="title" required maxlength="200" placeholder="e.g. Flight to Denver"></div>' +
+        '<div class="row"><div><label>Date</label><input type="date" name="date" required></div>' +
+        '<div><label>Time (optional)</label><input type="time" name="time"></div></div>' +
+        '<div><label>Details (optional)</label><textarea name="details" maxlength="2000" placeholder="Flight no., address, who she\'s meeting, what to bring…"></textarea></div>' +
+        '<div><label>Link (optional)</label><input type="url" name="link" placeholder="Calendar event, booking or email link"></div>' +
+        '<div class="actions"><button class="btn primary" type="submit">Save reminder</button>' +
+        '<button class="btn ghost" type="button" onclick="closeForm(\'rem\',\'' + x + '\')">Cancel</button></div>' +
+      '</form><div id="remList-' + x + '"></div></div>' +
+
+    '<div class="panel"><div class="panel-head"><h3>✉️ Email Highlights</h3>' +
+      '<button class="btn sm" onclick="openForm(\'hl\',\'' + x + '\')">+ Add</button></div>' +
+      '<div class="sub">Emails she shouldn\'t miss, even after they leave her calendar. Send one at a time, or send the digest.</div>' +
+      '<form class="form hidden" id="hl-' + x + '" onsubmit="saveHighlight(event,\'' + x + '\')">' +
+        '<input type="hidden" name="id">' +
+        '<div><label>Section</label><select name="section">' +
+          SECTIONS.map(function (s) { return '<option value="' + s.key + '">' + s.icon + ' ' + s.key + '</option>'; }).join('') +
+        '</select></div>' +
+        '<div><label>Summary</label><textarea name="summary" required maxlength="2000" placeholder="What the email is about and what she needs to do"></textarea></div>' +
+        '<div><label>Email link</label><input type="url" name="link" placeholder="Paste the Gmail link"></div>' +
+        '<div class="actions"><button class="btn primary" type="submit" value="send">Save & send</button>' +
+        '<button class="btn" type="submit" value="save">Save only</button>' +
+        '<button class="btn ghost" type="button" onclick="closeForm(\'hl\',\'' + x + '\')">Cancel</button></div>' +
+      '</form><div id="hlList-' + x + '"></div></div>';
+}
+
+function renderExecLists(x) {
+  document.getElementById('hook-' + x).textContent = BOARD.hooks[x] ? '' :
+    '⚠ No Google Chat webhook set for ' + EXEC_NAME[x] + ' yet. Add it in Code.gs (CONFIG.WEBHOOKS) to enable sending.';
+
+  const rem = BOARD.reminders.filter(function (r) { return r.Exec === x; }).sort(byWhen);
+  document.getElementById('remList-' + x).innerHTML = rem.length
+    ? rem.map(function (r) { return reminderCard(r, false); }).join('')
+    : '<div class="empty">Nothing scheduled yet.</div>';
+
+  const hl = BOARD.highlights.filter(function (h) { return h.Exec === x; });
+  document.getElementById('hlList-' + x).innerHTML = SECTIONS.map(function (s) {
+    const list = hl.filter(function (h) { return h.Section === s.key; })
+      .sort(function (a, b) { return a.Created.localeCompare(b.Created); });
+    return '<div class="sec-head">' + s.icon + ' ' + s.key + ' <span class="progress">(' + list.length + ')</span></div>' +
+      (list.length ? list.map(function (h) { return highlightCard(h, s); }).join('') : '<div class="empty">None.</div>');
+  }).join('');
+}
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+function toggleCheck(scope, id, el) {
+  BOARD.checks[scope] = BOARD.checks[scope] || {};
+  if (el.checked) BOARD.checks[scope][id] = true; else delete BOARD.checks[scope][id];
+  renderCommand();
+  api('toggleCheck', { scope: scope, id: id, value: el.checked }).catch(function (err) {
+    if (el.checked) delete BOARD.checks[scope][id]; else BOARD.checks[scope][id] = true;
+    renderCommand();
+    toast('Checklist not saved: ' + (err.message || err), 'err');
+  });
+}
+
+function calcRebate() {
+  const v = parseFloat(document.getElementById('permitIn').value);
+  const out = document.getElementById('permitOut');
+  if (isNaN(v)) { out.innerHTML = 'Rule: under $350 → match it. Over $350 → cap at $350.'; return; }
+  const money = function (n) { return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+  out.innerHTML = v <= 350
+    ? 'Set Permitting Rebate to <b>' + money(v) + '</b> (matches permitting).'
+    : 'Over $350 → set Permitting Rebate to <b>$350.00</b>.';
+}
+
+function formEl(kind, x) { return document.getElementById(kind + '-' + x); }
+function openForm(kind, x) {
+  const f = formEl(kind, x); f.reset(); f.elements.id.value = '';
+  f.querySelector('button[type=submit]').textContent = kind === 'rem' ? 'Save reminder' : 'Save & send';
+  f.classList.remove('hidden');
+  f.querySelector('input:not([type=hidden]), select, textarea').focus();
+}
+function closeForm(kind, x) { const f = formEl(kind, x); f.reset(); f.elements.id.value = ''; f.classList.add('hidden'); }
+
+function lockForm(f, on) { f.querySelectorAll('button').forEach(function (b) { b.disabled = on; }); }
+
+function saveReminder(e, x) {
+  e.preventDefault();
+  const f = e.target, v = f.elements;
+  lockForm(f, true);
+  run('saveReminder', { exec: x, id: v.id.value, title: v.title.value, date: v.date.value, time: v.time.value, details: v.details.value, link: v.link.value },
+      v.id.value ? 'Reminder updated' : 'Reminder saved')
+    .then(function () { closeForm('rem', x); })
+    .catch(function () {})
+    .then(function () { lockForm(f, false); });
+}
+
+function saveHighlight(e, x) {
+  e.preventDefault();
+  const f = e.target, v = f.elements;
+  const sendNow = !!(e.submitter && e.submitter.value === 'send');
+  lockForm(f, true);
+  run('saveHighlight', { exec: x, id: v.id.value, section: v.section.value, summary: v.summary.value, link: v.link.value, sendNow: sendNow },
+      sendNow ? 'Saved & sent to ' + EXEC_NAME[x] : 'Highlight saved')
+    .then(function () { closeForm('hl', x); })
+    .catch(function () {})
+    .then(function () { lockForm(f, false); });
+}
+
+function editReminder(id) {
+  const r = BOARD.reminders.filter(function (i) { return i.ID === id; })[0]; if (!r) return;
+  const f = formEl('rem', r.Exec), v = f.elements;
+  v.id.value = r.ID; v.title.value = r.Title; v.date.value = r.Date; v.time.value = r.Time; v.details.value = r.Details; v.link.value = r.Link;
+  f.querySelector('button[type=submit]').textContent = 'Update reminder';
+  f.classList.remove('hidden'); f.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function editHighlight(id) {
+  const h = BOARD.highlights.filter(function (i) { return i.ID === id; })[0]; if (!h) return;
+  const f = formEl('hl', h.Exec), v = f.elements;
+  v.id.value = h.ID; v.section.value = h.Section; v.summary.value = h.Summary; v.link.value = h.EmailLink;
+  f.querySelector('button[type=submit]').textContent = 'Update & send';
+  f.classList.remove('hidden'); f.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function sendHighlight(id, followUp) { run('sendHighlight', { id: id, followUp: followUp }, followUp ? 'Follow-up sent' : 'Sent to chat').catch(function () {}); }
+function sendReminder(id) { run('sendReminder', { id: id }, 'Reminder sent to chat').catch(function () {}); }
+function sendDigest(x) {
+  if (!confirm('Send all open highlights for ' + EXEC_NAME[x] + ' to her chat?')) return;
+  run('sendDigest', { exec: x }, 'Digest sent to ' + EXEC_NAME[x]).catch(function () {});
+}
+function markDone(sheet, id) { run('markDone', { sheet: sheet, id: id }, 'Marked done').catch(function () {}); }
+function deleteItem(sheet, id) {
+  if (!confirm('Delete this item for good?')) return;
+  run('deleteItem', { sheet: sheet, id: id }, 'Deleted').catch(function () {});
+}
+
+/* =========================================================
+   SOP CONTENT
+   ========================================================= */
+const STATE_ROWS = [
+  ['Arizona','1','ROC CR-11 Solar / B-2 General','C-11','$5,000+','Qualifying party tied to the license'],
+  ['Arkansas','3','None','State Electrical','None',''],
+  ['California','1','CSLB A/B, C-10 Electrical / C-46 Solar','C-10','$25,000+','Solar registration, qualifying party, verify on CSLB'],
+  ['Colorado','2','None','DORA Electrical','None','Local electrical (Denver, Aurora, Lakewood)'],
+  ['Connecticut','2','DOC HIC','E-1 / E-2 (E-2 common for solar)','None','*Supervising Electrician Required. Local overlay'],
+  ['Florida','1','DBPR CGC General','EC Electrical','None','County license'],
+  ['Georgia','1','GCOC General','State Electrical','None','County overlay common'],
+  ['Idaho','3','DOPL GC Registration','Local / AHJ Electrical','None','*Supervising Electrician Required'],
+  ['Illinois','2','Distributed Generation Certificate','State + local Electrical','None','Shines Approved Vendor status: signed Shines Designee Form and DG Certs. Certificate of Good Standing dated in the last 12 months. Chicago licenses separately.'],
+  ['Indiana','3','None','Local Electrical','None',''],
+  ['Iowa','3','DIAL Construction Contractor','Iowa Electrical Board','None','*Supervising Electrician Required'],
+  ['Kansas','3','None','Local / City Electrical','None',''],
+  ['Kentucky','3','DHBC Registration','Local Electrical','None','Louisville/Jefferson County'],
+  ['Maine','3','None','DPS Electrical','None',''],
+  ['Maryland','2','MHIC','State Electrical','None','Montgomery and PG County local overlay'],
+  ['Massachusetts','2','HIC Registration','State Electrical','None',''],
+  ['Michigan','3','LARA General Contractor','LARA Electrical Contractor','None','*Supervising Electrician Required'],
+  ['Missouri','3','None','Local / AHJ Electrical','None','Kansas City and St. Louis have strong local rules'],
+  ['Nevada','1','NSCB B-2 General','C-2 | C2-G','$1,000+','Solar registration, qualifying party, OSHA 10 cards for crews'],
+  ['New Mexico','3','NMRLD License','RLD Electrical','None',''],
+  ['New York','2','DERS Reg','Local Electrical','None','Local licensing, NYC licenses separately'],
+  ['North Carolina','1','NCLBGC General','Unlimited Electrical','None',''],
+  ['Ohio','3','None','State + local Electrical','None','Columbus and Cleveland overlays'],
+  ['Oklahoma','3','None','State Electrical (OMES)','None','*Supervising Electrician Required. OKC and Tulsa overlays'],
+  ['Oregon','2','CCB','DCBS Electrical','None','*Supervising Electrician Required. Portland local overlay'],
+  ['Pennsylvania','2','HIC Registration','State Electrical','None','Philadelphia overlay'],
+  ['South Carolina','1','SC LLR General','State Mechanical License','None','Must be licensed in SC specifically'],
+  ['Texas','2','None','TECL Electrical (TDLR)','None','Local permits vary widely'],
+  ['Utah','2','DOPL General','DOPL Electrical','None','Salt Lake City extras'],
+  ['Virginia','2','DPOR Class A/B/C (by project size)','State Electrical','None','']
+];
+
+const WC_ROWS = [
+  ['Arizona','Yes, until the first hire','Exemption on file with the ROC','Secondary'],
+  ['California','Mandatory for nearly all CSLB licenses as of January 1, 2028','Signed CSLB exemption certification','State site (CSLB)'],
+  ['Colorado','Yes, only after a formal rejection is filed. Construction owners must carry coverage or file the rejection','Copy of the filed rejection','State site (CDLE)'],
+  ['Florida','Construction requires a state exemption certificate. LLC and corporate officers need 10% ownership, max 3 per company, $50 fee','Copy of the DFS exemption certificate','State site (CFO), partial. Sole proprietor rule not confirmed'],
+  ['Georgia','Yes, with a state filing (Form BOC-1)','Copy of the filing','Secondary'],
+  ['Illinois','Narrow. Construction is treated as extra-hazardous, and LLC members exclude themselves by written notice to their carrier','Confirm with counsel before accepting','Secondary'],
+  ['Nevada','Yes. Not allowed if the license is qualified by an employee rather than an owner','NSCB exemption affidavit','State site (NSCB)'],
+  ['North Carolina','Yes. Coverage is required only at 3 or more employees, and owners are not counted','Nothing further','State site (NCIC)'],
+  ['Texas','Yes. Coverage is optional for most private employers','Nothing further','Secondary'],
+  ['Utah','Yes, with a Labor Commission waiver (1 year, $50)','Copy of the current waiver','State site (Labor Commission)'],
+  ['SC, CT, MD, NY, OR, PA, VA','Unverified. Secondary sources say owners with no employees are generally excluded, but New York is entity and project specific','Verify with the state','Secondary'],
+  ['AR, ID, IN, IA, KS, KY, ME, MI, MO, NM, OH, OK','Unverified. Sources conflict (e.g. one says Missouri excludes construction, another lists no owner exemption for Kentucky). Ohio is a state fund','Verify with the state','Secondary']
+];
+
+function table(head, rows) {
+  return '<div class="table-wrap"><table class="sop-table"><tr>' + head.map(function (h) { return '<th>' + h + '</th>'; }).join('') + '</tr>' +
+    rows.map(function (r) { return '<tr>' + r.map(function (c, i) { return '<td>' + (i === 0 ? '<b>' + c + '</b>' : (c || '—')) + '</td>'; }).join('') + '</tr>'; }).join('') +
+    '</table></div>';
+}
+
+const GPS_AI = 'GoodPWR Solar LLC, its members, officers and employees, and the project owner(s) are included as additional insureds on the General Liability, Automobile Liability and Umbrella/Excess Liability policies for both ongoing and completed operations, as required by written contract. General Liability coverage for additional insureds applies on a primary and non-contributory basis. Waiver of subrogation applies in favor of GoodPWR Solar LLC and the project owner(s) under the General Liability, Automobile Liability, Umbrella/Excess Liability and Workers\' Compensation policies, as required by written contract and as permitted by law.';
+const LR_AI = 'Project and owner(s) are additional insured as respects to general liability, auto liability and excess liability as required by written contract. General liability coverage for additional insured applies on a primary and non-contributory basis and includes completed operations. Waiver of Subrogation applies in favor of Additional Insured with respect to General Liability, Automobile Liability, Excess Liability and Workers Compensation policies as required by written contract and as permitted by law. Workers Compensation complies with the state statutes in which the work will be performed.';
+
+const SOP_GROUPS = [
+  { group: 'Overview', items: {
+    'SOP Intro: Objective & Purpose': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">Objective</span>
+          This manual covers the daily executive support routine, the weekly commission check, Build Partner compliance and onboarding, and Roofix procedures within the <b>Goodpwr Solar</b> ecosystem.</div>
+        <div class="sop-card-tan mt"><span class="sop-label">Mandate</span>
+          Everyone handling these queues follows the steps below so nothing is missed and every review is consistent.</div>
+      </div>`
+  }},
+  { group: 'Daily & Weekly Tasks', items: {
+    'Daily Executive Support Routine': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">Purpose</span>
+          Keep Miss Sherry and Miss Jamie on top of every email and date that matters, even after it leaves their calendar.</div>
+        <div class="sop-grid-blocks">
+          <div class="sop-card-dark"><span class="sop-label">1. Clear inbox & calendar</span>
+            Open each inbox from the Command Center. Clear the calendar for the day.</div>
+          <div class="sop-card-dark"><span class="sop-label">2. Log highlights</span>
+            On her board, add each email she must see: write a short summary, paste the email link, pick a section.</div>
+        </div>
+        <div class="sop-card-tan mt"><span class="sop-label">Sections</span>
+          • <b>🔴 Need Action:</b> she has to do something (approve, sign, pay, decide).<br>
+          • <b>🟡 Need Response:</b> someone is waiting for her reply.<br>
+          • <b>🔵 FYI:</b> good to know, no action needed.</div>
+        <div class="sop-card-tan mt"><span class="sop-label">3. Send & follow up</span>
+          • Use <b>Save & send</b> for urgent items, or send the <b>digest</b> once with everything.<br>
+          • Items sent on an earlier day and still open are flagged <b>"follow up?"</b>. Use <b>🔁 Follow up</b> to remind her again.<br>
+          • Mark an item <b>✓ Done</b> once she has handled it.</div>
+        <div class="sop-card-dark mt"><span class="sop-label">4. Schedule & reminders</span>
+          Add trips, appointments and anything with a date to her board. They light up the day before and on the day, and show in the Command Center heads-up. Use <b>Send to chat</b> to remind her.</div>
+        <div class="sop-card-dark mt"><span class="sop-label">5. Meeting reminders</span>
+          Run the meeting reminder tool from the Command Center.</div>
+      </div>`,
+
+    'Weekly Commission Check': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">When</span> Every <b>Wednesday</b>.</div>
+        <div class="sop-grid-blocks">
+          <div class="sop-card-dark"><span class="sop-label">1. Contract Review</span>
+            Make sure the amount on the commission spreadsheet matches the amount on the CRM. Update the spreadsheet where it doesn't.</div>
+          <div class="sop-card-dark"><span class="sop-label">2. Adders</span>
+            Make sure these match QuickBooks:<br>• Permitting<br>• TPI<br>• ICX<br>• Battery<br>• Materials</div>
+        </div>
+        <div class="sop-card-tan sop-alert mt"><span class="sop-label sop-alert">3. JA Report (CRM)</span>
+          Check the JA report for any <b>red negative</b> and fix the Permitting Rebate:<br>
+          • Permitting <b>$350 or less</b> → set the Permitting Rebate to match the permitting amount.<br>
+          • Permitting <b>more than $350</b> → set the Permitting Rebate to <b>$350</b> only.</div>
+        <div class="sop-card-dark mt"><span class="sop-label">Tip</span>
+          Use the Permitting Rebate Calculator on the Command Center.</div>
+      </div>`,
+
+    'Daily Compliance Check': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">When</span> Every day.</div>
+        <div class="sop-grid-blocks">
+          <div class="sop-card-dark"><span class="sop-label">1. Review</span>
+            Open the <a href="https://getgoodpwr.github.io/buildpartner-desk/" target="_blank" rel="noopener">Build Partner Desk</a>. Check each new submission against the onboarding SOPs below: core documents, state licenses, COIs.</div>
+          <div class="sop-card-dark"><span class="sop-label">2. Set the status</span>
+            Approved, Under Review, Need More Information or Rejected, per document.</div>
+        </div>
+        <div class="sop-card-tan mt"><span class="sop-label">3. Follow up missing documents</span>
+          • Send a follow-up from the Build Partner Desk for anything missing or rejected.<br>
+          • Say exactly what is missing or wrong (e.g. "COI is missing the waiver of subrogation").<br>
+          • Proof of license, certifications and insurance goes to <b>compliance@getgoodpwr.com</b>.</div>
+      </div>`
+  }},
+  { group: 'Build Partner Onboarding', items: {
+    'BP Onboarding: Core Documents': `
+      <div class="sop-section">
+        <div class="sop-card-tan sop-alert"><span class="sop-label sop-alert">Rule</span>
+          No payment and no work until every required item is in: Agreement, W-9, Code of Conduct, General Liability COI, Workers' Comp COI (or approved affidavit) and licenses. State and financier items are added on top.</div>
+        <div class="sop-card-dark mt"><span class="sop-label">Build Partner Agreement (MSA)</span>
+          Current version, signed by an authorized representative and countersigned by GoodPWR Solar LLC, signature dated this year. Legal entity name on page 1, entity type checked (LLC sub type too), and any state or financier addendum signed.</div>
+        <div class="sop-grid-blocks">
+          <div class="sop-card-dark"><span class="sop-label">W-9</span>
+            Legal entity name matches the license and insurance. EIN is a full 9 digits. Tax classification checked. Signed and dated.
+            <a href="https://drive.google.com/file/d/15vZyZOj2aSzUHnI0dtebK7sPBrlKmdum/view?usp=sharing" target="_blank" rel="noopener">IRS Form W9</a></div>
+          <div class="sop-card-dark"><span class="sop-label">Code of Conduct</span>
+            Signed and dated by the build partner and by GoodPWR Solar.
+            <a href="https://drive.google.com/file/d/1RtETUUy_YcyZnnbaQvH5nYHIBx5GMckQ/view?usp=sharing" target="_blank" rel="noopener">GPS Build Partner Code of Conduct</a></div>
+        </div>
+        <div class="sop-card-dark mt"><span class="sop-label">General Liability COI</span>
+          $1M per occurrence / $2M aggregate, operations and products.<br>
+          • Policy is active (check effective and expiration dates).<br>
+          • GoodPWR Solar LLC, 16615 W 93rd Pl, Arvada CO 80007 is the certificate holder and is <b>named as additional insured explicitly</b>.<br>
+          • Waiver of subrogation listed. No exclusions that void solar or roofing work.</div>
+        <div class="sop-grid-blocks">
+          <div class="sop-card-dark"><span class="sop-label">Workers' Comp</span>
+            COI by default, with GoodPWR Solar as certificate holder. Affidavit only as a last resort. See the Workers' Comp SOP.</div>
+          <div class="sop-card-dark"><span class="sop-label">Licenses & certifications</span>
+            Active copies for every market. <b>Verify on the state licensing board site</b>, never from the PDF alone. Confirm the license holder is the entity doing the work.</div>
+        </div>
+        <div class="sop-card-tan mt"><span class="sop-label">Optional: ACH form</span>
+          Bank name, routing and account number present. Account holder matches the entity or DBA on the W-9. Signed and dated.</div>
+      </div>`,
+
+    'BP Onboarding: Workers Comp COI vs Affidavit': `
+      <div class="sop-section">
+        <div class="sop-card-tan sop-alert"><span class="sop-label sop-alert">Collect the COI by default</span>
+          Accept the signed <a href="https://drive.google.com/file/d/1_WfG_9TTjPYpo2Ubdue91Ug9j-C0AOzX/view?usp=sharing" target="_blank" rel="noopener">Workers Comp Exemption Affidavit</a> only if every attempt to get the COI is exhausted <b>and</b> all three conditions are met. Last resort only.</div>
+        <div class="sop-grid-blocks">
+          <div class="sop-card-dark"><span class="sop-label">1. No employees</span>
+            Sole proprietor, single member LLC or independent contractor with no employees.</div>
+          <div class="sop-card-dark"><span class="sop-label">2. State allows it</span>
+            Several states don't. Check the state first. The state name must be filled in on the form.</div>
+        </div>
+        <div class="sop-card-dark mt"><span class="sop-label">3. Financier allows it</span>
+          Some financiers allow an exemption if the state does and no COI can be obtained. <b>LightReach does not permit exemptions</b>: it requires state-compliant workers' comp at $1M each accident / $1M disease each employee / $1M disease policy limit.</div>
+        <div class="sop-card-tan mt"><span class="sop-label">If a COI is used</span>
+          Same $1M limits, GoodPWR Solar as certificate holder, waiver of subrogation in favor of GoodPWR Solar. The affidavit must be signed and dated, and obliges the partner to tell GoodPWR Solar right away if they hire employees.</div>
+        <div class="sop-card-dark mt"><span class="sop-label">Affidavit by state</span>
+          "State site" rows were checked against a state agency page. "Secondary" rows are leads only, so verify before accepting. Where a state issues its own exemption, waiver or rejection, collect a copy along with the GoodPWR affidavit.
+          ${table(['State', 'Affidavit OK (owner, no employees)?', 'Also collect', 'Basis'], WC_ROWS)}</div>
+        <div class="sop-card-tan sop-alert mt"><span class="sop-label sop-alert">California</span>
+          Coverage becomes mandatory for nearly all CSLB licenses on January 1, 2028. Recheck California before accepting an affidavit there.</div>
+      </div>`,
+
+    'BP Onboarding: State Licenses': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">Rule</span>
+          Collect licenses for each state the partner builds in, one set per state. Every state can also require a city or county license, so ask for local licenses wherever the jurisdiction issues them.
+          ${table(['State', 'Tier', 'GC / HIC license', 'Electrical license', 'Bond', 'Also required'], STATE_ROWS)}</div>
+      </div>`,
+
+    'BP Onboarding: Illinois (IL Shines)': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">Why</span>
+          IL Shines requires all subcontractors to be nested under GoodPWR Solar LLC's Approved Vendor status.</div>
+        <div class="sop-card-tan mt"><span class="sop-label">Required for Illinois work</span>
+          • Complete the <a href="https://illinoisshines.com/wp-content/uploads/2023/11/Designee-Request-Form-v5.pdf" target="_blank" rel="noopener">IL Shines Designee form</a>.<br>
+          • IL Secretary of State <b>Certificate of Good Standing</b>, dated in the last 12 months.<br>
+          • Proof of <a href="https://icc.illinois.gov/emdb/ucdb/search" target="_blank" rel="noopener">DG Certs</a>.<br>
+          • Submit the annual MES Compliance Plan directly to the program.<br>
+          • Complete all required training modules.</div>
+        <div class="sop-card-dark mt"><span class="sop-label">Tools</span>
+          <a href="https://getgoodpwr.github.io/Compliance-Portal/" target="_blank" rel="noopener">GoodPWR Solar Designee Compliance Portal</a> ·
+          <a href="https://docs.google.com/document/d/1pTL6Jsh5LJFL4bcUyEQXLJxejz686k-D/edit?usp=sharing" target="_blank" rel="noopener">BP Onboarding - IL Shines App SOP</a></div>
+      </div>`,
+
+    'BP Onboarding: OSHA Training': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">Rule</span>
+          OSHA 10 is not a core document. Require it in <b>Nevada</b>, and elsewhere only when a project or contract calls for it.</div>
+        <div class="sop-grid-blocks">
+          <div class="sop-card-tan sop-alert"><span class="sop-label sop-alert">Nevada (required by law)</span>
+            Every construction worker needs OSHA 10 Construction within 15 days of hire. Supervisors need OSHA 30. Collect card copies for Nevada crews.</div>
+          <div class="sop-card-dark"><span class="sop-label">Public works only</span>
+            CT (public buildings over $100,000), MO (any public works), NY (over $250,000), PA (over $100,000). Doesn't apply to private residential installs.</div>
+        </div>
+        <div class="sop-card-dark mt"><span class="sop-label">Card check</span>
+          OSHA 10 for installers, OSHA 30 for crew leads and supervisors. Cards don't expire. There's no national database, so check the QR code on a plastic card or call the trainer. Training within the past five years is a reasonable standard if you set one.</div>
+      </div>`,
+
+    'BP Onboarding: LightReach Financier Docs': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">Rule</span>
+          LightReach is the only financier with its own requirements. Partners building LightReach projects submit a separate LightReach COI set on top of the core GL and WC certificates.</div>
+        <div class="sop-grid-blocks">
+          <div class="sop-card-dark"><span class="sop-label">Limits</span>
+            • General Liability: $1M per occurrence / $2M aggregate, operations and products<br>
+            • Workers' Comp: $1M each accident / $1M disease each employee, state-compliant<br>
+            • Commercial Auto: $1M combined BI/PD, must say <b>"any auto"</b><br>
+            • Umbrella / Excess: $1M per occurrence</div>
+          <div class="sop-card-tan"><span class="sop-label">Certificate holder (exact match)</span>
+            Palmetto Solar, LLC d/b/a LightReach, 1616 Camden Rd Suite 300, Charlotte NC 28203</div>
+        </div>
+        <div class="sop-card-dark mt"><span class="sop-label">Additional insured wording (exact)</span>
+          <p class="sop-quote">${LR_AI}</p></div>
+      </div>`,
+
+    'Licensing & Insurance Requirements': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">What partners must send</span>
+          Before any payment or work: completed W-9, proof of licenses and certificates of insurance, through the Build Partner Onboarding portal or by email to <b>compliance@getgoodpwr.com</b>.</div>
+        <div class="sop-grid-blocks">
+          <div class="sop-card-dark"><span class="sop-label">W-9</span>
+            Legal company name and any DBA used with GoodPWR Solar. Tax classification, company address, tax ID and a dated signature.</div>
+          <div class="sop-card-dark"><span class="sop-label">Licensing & certifications</span>
+            Active contractor license(s) and installation certifications in all applicable markets.</div>
+        </div>
+        <div class="sop-card-tan mt"><span class="sop-label">COI: GoodPWR Solar LLC</span>
+          • General Liability: $1M per occurrence / $2M aggregate operations/products<br>
+          • Umbrella/Excess: $1M per occurrence<br>
+          • Workers' Comp (Employers' Liability): $1M each accident, $1M disease/employee, $1M disease policy limit<br>
+          • Certificate holder: GoodPWR Solar LLC, 16615 W 93rd Pl, Arvada, CO 80007<br>
+          • Waiver of subrogation in favor of GoodPWR Solar LLC<br>
+          • If WC is through a PEO, the partner's company must be listed as the covered client
+          <p class="sop-quote">${GPS_AI}</p></div>
+        <div class="sop-card-tan mt"><span class="sop-label">COI: LightReach (LightReach projects only)</span>
+          • General Liability: $1M per occurrence / $2M aggregate<br>
+          • Umbrella/Excess: $1M per occurrence<br>
+          • Commercial Auto: $1M combined bodily injury and property damage<br>
+          • Workers' Comp: $1M each accident, $1M disease/employee, $1M disease policy limit<br>
+          • Certificate holder: Palmetto Solar, LLC d/b/a LightReach, 1616 Camden Rd Suite 300, Charlotte NC 28203<br>
+          • Waiver of subrogation in favor of Palmetto Solar, LLC d/b/a LightReach
+          <p class="sop-quote">${LR_AI}</p></div>
+        <div class="sop-card-dark mt"><span class="sop-label">COI request template (for partners to send their insurer)</span>
+          "Hello, please provide our Certificates of Insurance including the following information:" followed by the GoodPWR Solar block (#1) and, if they build LightReach projects, the Palmetto Solar block (#2), each with limits, certificate holder, additional insured language, WC waiver of subrogation and the PEO note. It may need to be split if they have multiple carriers.
+          <br><a href="https://docs.google.com/document/d/1SLq7Nlrd7_bj2sv9CqpoUEbc0q1HcYNbSZVCp6ErUFc/edit?tab=t.0" target="_blank" rel="noopener">Licensing & Insurance Requirements (full doc)</a></div>
+      </div>`,
+
+    'Onboarding: Docs': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">1. Contract Review</span>
+          Once the contract is signed by both Miss Sherry and the sales team: double-check all documents for accuracy and verify the W-9 is fully completed per the requirements below.</div>
+        <div class="sop-card-dark mt"><span class="sop-label">2. Required W-9 Fields</span>
+          • <b>Box 1:</b> Required (Text) | <b>Box 2:</b> Optional (Text)<br>
+          • <b>Box 3a:</b> Optional checkboxes | <b>Box 5 & 6:</b> Required (Text)<br>
+          • <b>Part I (TIN):</b> Employer Identification Number (EIN) is <b>Required</b>.<br>
+          • <b>Part II (Certification):</b> Signature field is <b>Required</b> (ensure Signature Type is enabled).</div>
+        <div class="sop-grid-blocks">
+          <div class="sop-card-tan"><span class="sop-label">3. Google Drive Filing</span>
+            Upload documents to the <b>Goodpwr Solar Partner Drive Folder</b>.<br>
+            <b>File Naming Format:</b> YYYYMMDD - Sales Partner Name - Document Type<br>
+            <i>Example: 20260508 - Sunly Home LLC - W9</i></div>
+          <div class="sop-card-tan"><span class="sop-label">4. Next Steps</span>
+            • Inform <b>Jamie</b> once documents are verified.<br>
+            • Jamie will send the JotForms and onboarding links.<br>
+            • Reach out to the owner immediately for any missing documents.</div>
+        </div>
+      </div>`,
+
+    'Onboarding: Salesforce': `
+      <div class="sop-section">
+        <div class="sop-grid-blocks" style="margin-top:0">
+          <div class="sop-card-dark"><span class="sop-label">1. Account Creation</span>
+            Go to <b>Accounts</b> and search for the sales partner. If no account exists, click <b>New</b>.</div>
+          <div class="sop-card-dark"><span class="sop-label">2. Required Account Information</span>
+            • <b>Account Name:</b> Official company name.<br>
+            • <b>Party Type:</b> <i>Sales Partner</i> | <b>Payment Type:</b> Per agreement.<br>
+            • <b>Market(s):</b> Select <u>only</u> markets that have numbers or amounts listed.<br>
+            • <b>Billing Address:</b> Company's official address.</div>
+        </div>
+        <div class="sop-card-tan mt"><span class="sop-label">3. Status Logic</span>
+          • <b>Active:</b> only if <u>all</u> documents are 100% complete.<br>
+          • <b>Onboarding:</b> if any documents are still missing.</div>
+        <div class="sop-card-dark mt"><span class="sop-label">4. Redline Setup</span>
+          On the Account's <b>Related</b> tab, click <b>New</b> in the <b>Redline</b> section. List all available markets only and add the financing redline details.</div>
+      </div>`
+  }},
+  { group: 'Roofix', items: {
+    'Roofix Report': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">Purpose</span> Prevent installs on homes requiring reroof.</div>
+        <div class="sop-card-tan mt"><span class="sop-label">Action Steps</span>
+          • Permit Approved: Confirm with Jamie/Sherry.<br>
+          • Permit NOT Approved: Ensure job stays before Permitting. Move to <b>ISSUE</b>.</div>
+        <div class="sop-card-tan sop-alert mt"><span class="sop-label sop-alert">Escalation</span>
+          Escalate if marked 'Approved' but past Permitting without a permit.</div>
+      </div>`,
+
+    'Create Roofix Quote': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">Steps</span>
+          1. Roofix Portal > New Contract.<br>
+          2. Enter Address > Confirm Address > Submit.<br>
+          3. New Project > Asphalt Shingles, MP, 1 Layer.<br>
+          4. Select: No Detached, No Full Redeck.<br>
+          5. Download Proposal once Opportunity is ready and send to Group Chat.</div>
+      </div>`,
+
+    'Roof Completion & Photos': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">1. Mark Complete</span> Mark the project as <b>Complete</b> in Salesforce.</div>
+        <div class="sop-card-dark mt"><span class="sop-label">2. Retrieve Photos from Roofix</span>
+          • Log in to the <b>Roofix Portal</b>.<br>
+          • Search for the customer's name and open their profile.<br>
+          • On the left menu, click <b>Job</b>.<br>
+          • On the right, find the <b>Gallery</b>.<br>
+          • Download a few completed roof photos.</div>
+        <div class="sop-card-tan mt"><span class="sop-label">3. Upload to Salesforce</span>
+          • Go to the customer's <b>GPIN</b> in Salesforce.<br>
+          • Click the <b>Related</b> tab, then <b>Files</b>.<br>
+          • Upload the photos from Roofix.</div>
+      </div>`
+  }},
+  { group: 'System', items: {
+    'SOP Maintenance & Board Troubleshooting': `
+      <div class="sop-section">
+        <div class="sop-card-dark"><span class="sop-label">Board data</span>
+          Highlights and reminders live in the Board Database spreadsheet (link under Workstations). If the board won't load, check your connection and reload the page.</div>
+        <div class="sop-card-dark mt"><span class="sop-label">Messages not sending</span>
+          • Confirm each Google Chat webhook is set in <b>Code.gs</b> (CONFIG.WEBHOOKS).<br>
+          • Run <b>testWebhooks</b> in the Apps Script editor to check both conversations.<br>
+          • After changing Code.gs, deploy a new version.</div>
+      </div>`
+  }}
+];
+
+const SOP_DATA = {};
+SOP_GROUPS.forEach(function (g) { Object.keys(g.items).forEach(function (k) { SOP_DATA[k] = g.items[k]; }); });
+
+/* =========================================================
+   SOP MODAL
+   ========================================================= */
+let sopRendered = false;
+function toggleModal(force) {
+  const m = document.getElementById('sopModal');
+  const open = typeof force === 'boolean' ? force : m.style.display !== 'block';
+  m.style.display = open ? 'block' : 'none';
+  if (open && !sopRendered) renderSOPs();
+}
+
+function renderSOPs() {
+  document.getElementById('sopAccordion').innerHTML = SOP_GROUPS.map(function (g) {
+    return '<div class="acc-group" data-group>' + g.group + '</div>' + Object.keys(g.items).map(function (key) {
+      return '<div class="acc-item" data-key="' + esc(key) + '"><div class="acc-header" onclick="toggleAcc(this)">' + key + ' <span>+</span></div>' +
+        '<div class="acc-body">' + g.items[key] + '</div></div>';
+    }).join('');
+  }).join('');
+  sopRendered = true;
+}
+
+function toggleAcc(el, forceOpen) {
+  const body = el.nextElementSibling;
+  const isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
+  document.querySelectorAll('.acc-body').forEach(function (b) { b.style.maxHeight = '0px'; });
+  document.querySelectorAll('.acc-header span').forEach(function (s) { s.innerText = '+'; });
+  if (!isOpen || forceOpen) { body.style.maxHeight = body.scrollHeight + 'px'; el.querySelector('span').innerText = '−'; }
+}
+
+function openSop(key) {
+  toggleModal(true);
+  document.getElementById('sopSearch').value = ''; filterSops('');
+  const item = Array.prototype.filter.call(document.querySelectorAll('.acc-item'), function (i) { return i.dataset.key === key; })[0];
+  if (!item) return;
+  const head = item.querySelector('.acc-header');
+  toggleAcc(head, true);
+  setTimeout(function () { head.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120);
+}
+
+function filterSops(q) {
+  q = q.trim().toLowerCase();
+  document.querySelectorAll('.acc-item').forEach(function (i) {
+    i.style.display = !q || i.textContent.toLowerCase().indexOf(q) > -1 ? '' : 'none';
+  });
+  document.querySelectorAll('[data-group]').forEach(function (g) {
+    let n = g.nextElementSibling, any = false;
+    while (n && n.classList.contains('acc-item')) { if (n.style.display !== 'none') any = true; n = n.nextElementSibling; }
+    g.style.display = any ? '' : 'none';
+  });
+}
+
+window.addEventListener('click', function (event) {
+  if (event.target === document.getElementById('sopModal')) toggleModal(false);
+});
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggleModal(false); });
+
+/* =========================================================
+   PDF MANUAL
+   ========================================================= */
+function triggerManualDownload() {
+  const frame = document.createElement('iframe');
+  frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:none;';
+  document.body.appendChild(frame);
+  const doc = frame.contentWindow.document;
+
+  const body = SOP_GROUPS.map(function (g) {
+    return '<div class="print-group">' + g.group + '</div>' + Object.keys(g.items).map(function (key) {
+      return '<div class="print-sop-block"><div class="print-sop-header">' + key + '</div><div class="print-sop-body">' + g.items[key] + '</div></div>';
+    }).join('');
+  }).join('');
+
+  const write = function (logo) {
+    doc.open();
+    doc.write('<html><head><title>Goodpwr Solar Operational Manual</title>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&display=swap" rel="stylesheet">' +
+      '<style>' +
+      '@page{size:A4 portrait;margin:0}' +
+      'body{background:#0d0d0f!important;color:#f5f5f7!important;font-family:"Cormorant Garamond",serif!important;margin:0;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}' +
+      '.cover-page{width:100vw;height:100vh;position:relative;background:url("https://res.cloudinary.com/dhllzxhst/image/upload/v1783541175/9fbd41bea8994061c7bcb69bc84d5b40_sadwwt.jpg") center/cover;display:flex;flex-direction:column;justify-content:flex-end;box-sizing:border-box;padding:80px 50px;page-break-after:always}' +
+      '.cover-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(13,13,15,.95) 0%,rgba(13,13,15,.4) 60%,rgba(0,0,0,0) 100%)}' +
+      '.cover-content{position:relative;z-index:2}.cover-content h1{font-size:3.5rem;letter-spacing:10px;text-transform:uppercase;margin:0 0 10px;font-weight:300}' +
+      '.cover-content h2{font-size:1.2rem;letter-spacing:5px;text-transform:uppercase;color:#FFB6C1;margin:0 0 40px;font-weight:400}' +
+      '.document-body{padding:60px 50px}' +
+      '.meta-table{width:100%;border-collapse:collapse;margin-bottom:40px;font-size:.85rem;text-transform:uppercase;letter-spacing:1px}' +
+      '.meta-table th,.meta-table td{border:1px solid rgba(141,110,99,.3);padding:12px;text-align:left}.meta-table th{color:#8D6E63;width:20%}.meta-table td{color:#c0c0c5;width:30%}' +
+      '.print-group{font-size:.8rem;letter-spacing:5px;text-transform:uppercase;color:#8D6E63;margin:30px 0 14px;border-bottom:1px solid rgba(141,110,99,.3);padding-bottom:6px}' +
+      '.print-sop-block{page-break-inside:avoid;margin-bottom:34px;border-bottom:1px solid rgba(141,110,99,.2);padding-bottom:22px}' +
+      '.print-sop-header{font-size:1.35rem;color:#FFB6C1!important;text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;font-weight:600}' +
+      '.sop-section{padding:0!important}.mt{margin-top:12px}' +
+      '.sop-grid-blocks{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}' +
+      '.sop-card-dark{background:#16161a!important;padding:14px;border-radius:4px;border:1px solid rgba(141,110,99,.2)!important;border-left:3px solid #8D6E63!important;color:#c0c0c5}' +
+      '.sop-card-tan{background:rgba(141,110,99,.04)!important;padding:14px;border-radius:4px;border-left:3px solid #FFB6C1!important;color:#c0c0c5}' +
+      '.sop-label{color:#FFB6C1!important;font-weight:600;display:block;margin-bottom:4px;text-transform:uppercase;font-size:.75rem;letter-spacing:1px}' +
+      '.sop-alert{border-left:3px solid #ff6b6b!important;color:#ff6b6b!important}' +
+      '.sop-quote{font-style:italic;border-left:2px solid #8D6E63;padding-left:10px;margin:8px 0 0}' +
+      'a{color:#FFB6C1}' +
+      '.sop-table{width:100%;border-collapse:collapse;font-size:.72rem;margin-top:10px;color:#c0c0c5}' +
+      '.sop-table th,.sop-table td{border:1px solid rgba(141,110,99,.3);padding:5px 6px;text-align:left;vertical-align:top}' +
+      '.sop-table th{color:#8D6E63;text-transform:uppercase}.sop-table tr{page-break-inside:avoid}' +
+      '</style></head><body>' +
+      '<div class="cover-page"><div class="cover-overlay"></div><div class="cover-content"><h1>Goodpwr Solar</h1>' +
+      '<h2>Standard Operating Procedure Manual</h2><div style="width:60px;height:1px;background:#fff;opacity:.4;margin-bottom:20px"></div>' +
+      '<div style="font-size:.8rem;letter-spacing:3px;text-transform:uppercase;opacity:.8">Operations & Compliance // 2026</div></div></div>' +
+      '<div class="document-body">' +
+      '<div style="text-align:center;margin-bottom:35px;border-bottom:1px solid rgba(141,110,99,.3);padding-bottom:20px">' +
+      (logo ? '<img src="' + logo + '" style="max-width:110px;height:auto">' : '') +
+      '<h2 style="font-size:1.5rem;font-weight:300;letter-spacing:4px;text-transform:uppercase;margin:10px 0 0;color:#e5e5e7">Goodpwr Solar LLC</h2></div>' +
+      '<table class="meta-table"><tr><th>Document ID</th><td>SOP-OPS-044</td><th>Department</th><td>Operations / Compliance & Executive Support</td></tr>' +
+      '<tr><th>System Title</th><td>Master Guidelines Array</td><th>Effective Date</th><td>November 12, 2026</td></tr></table>' +
+      body + '</div></body></html>');
+    doc.close();
+    setTimeout(function () {
+      frame.contentWindow.focus();
+      frame.contentWindow.print();
+      setTimeout(function () { document.body.removeChild(frame); }, 1000);
+    }, 700);
+  };
+
+  const img = new Image();
+  img.crossOrigin = 'Anonymous';
+  img.onload = function () {
+    try {
+      const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+      c.getContext('2d').drawImage(img, 0, 0);
+      write(c.toDataURL('image/jpeg'));
+    } catch (e) { write(''); }
+  };
+  img.onerror = function () { write(''); };
+  img.src = 'https://res.cloudinary.com/dhllzxhst/image/upload/v1783536958/Screenshot_2026-06-30_121847_ybxviv.jpg';
+}
+
+/* =========================================================
+   START
+   ========================================================= */
+EXECS.forEach(buildExecBoard);
+try { const t = sessionStorage.getItem('gp_tab'); if (t && document.getElementById('tab-' + t)) showTab(t); } catch (e) {}
+load();
+</script>
+</body>
+</html>
